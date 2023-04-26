@@ -1,0 +1,25 @@
+<table class="table mt-5 table-striped table-bordered table-hover">
+    <thead class="thead-default">
+      <tr>
+        <th>Nombres</th>
+        <th>Apellido Paterno</th>
+        <th>Apellido Materno</th>
+        <th>Fecha Nacimiento</th>
+        <th>Sexo</th>
+        <th>Dirección</th>
+        <th>Correo</th>
+      </tr>
+    </thead>
+    <tbody >
+      <tr *ngFor="let cliente of clientes" style="cursor: pointer" (click)="seleccionarCliente(cliente)" [attr.data-id]="cliente.email" routerLink="/edit/{{cliente}}">
+        <td>{{cliente.nombres}} </td>
+        <td> {{cliente.apellidoPaterno}}</td>
+        <td>{{cliente.apellidoMaterno}}</td>
+        <td>{{cliente.sexo}}</td>
+        <td>{{cliente.fechaNacimiento}}</td>
+        <td>{{cliente.direccion}}</td>
+        <td>{{cliente.email}}</td>
+      
+      </tr>
+    </tbody>
+  </table>
