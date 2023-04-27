@@ -11,12 +11,12 @@
       </tr>
     </thead>
     <tbody >
-      <tr *ngFor="let cliente of clientes" style="cursor: pointer" (click)="seleccionarCliente(cliente)" [attr.data-id]="cliente.email" routerLink="/edit/{{cliente}}">
+      <tr *ngFor="let cliente of clientes" style="cursor: pointer" (click)="seleccionarCliente(cliente)" routerLink="/edit/{{cliente.id}}">
         <td>{{cliente.nombres}} </td>
         <td> {{cliente.apellidoPaterno}}</td>
         <td>{{cliente.apellidoMaterno}}</td>
-        <td>{{cliente.sexo}}</td>
         <td>{{cliente.fechaNacimiento}}</td>
+        <td>{{cliente.sexo}}</td>
         <td>{{cliente.direccion}}</td>
         <td>{{cliente.email}}</td>
       

@@ -1,25 +1,27 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnChanges  } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Cliente } from 'src/app/models/cliente';
 import { ClienteService } from 'src/app/service/cliente.service';
-import { ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { MessageService } from 'src/app/service/message.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-body',
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit{
+export class BodyComponent implements OnInit {
   
-
+  public formLogin !: FormGroup;
   
   cliente: Cliente = {
     nombres: '',
     apellidoPaterno: '',
     apellidoMaterno: '',
     sexo: '',
-    fechaNacimiento: '',
+    fechaNacimiento: new Date(),
     direccion: '',
     email: ''
   };
@@ -27,34 +29,70 @@ export class BodyComponent implements OnInit{
   constructor(
     private clienteService: ClienteService,
     private router: Router ,
+    private toastr: ToastrService,
+    private messageService: MessageService,
+    private formBuilder: FormBuilder,
+    private datePipe: DatePipe,
     private activatedRoute: ActivatedRoute,
-    private toastr: ToastrService
-    
+    private toastrService: ToastrService
   ){
     
   }
 
   ngOnInit(): void {
-    //const cliente = this.activatedRoute.snapshot.params['cliente'];
+    
+    this.formLogin = this.formBuilder.group({
+      id: [, []],
+      nombres: ['', [Validators.required]],
+      apellidoPaterno: ['', []],
+      apellidoMaterno: ['', []],
+      sexo: ['', []],
+      fechaNacimiento: ['', [Validators.required]],
+      direccion: ['', []],
+      email: ['', [Validators.required, Validators.email]]
+    });
+
+    this.getMessage();
+
   }
 
+  public getMessage(): void{
+
+    this.messageService.event.subscribe( data => {
+    const response3 = {
+      id: data.id,
+      nombres: data.nombres,
+      apellidoPaterno: data.apellidoPaterno,
+      apellidoMaterno: data.apellidoMaterno,
+      sexo: data.sexo,
+      fechaNacimiento: this.datePipe.transform(new Date(data.fechaNacimiento),"yyyy-MM-dd"),
+      direccion: data.direccion,
+      email: data.email
+    }
+
+      this.formLogin.patchValue(response3);
+    } );
+
+    
+  }
 
   registrarCliente(): void{
 
    
-    const cliente = new Cliente(this.cliente.nombres, this.cliente.apellidoPaterno, this.cliente.apellidoMaterno,
-       this.cliente.sexo, this.cliente.fechaNacimiento, this.cliente.direccion, this.cliente.email);
+    const cliente = new Cliente(this.formLogin.value.nombres, this.formLogin.value.apellidoPaterno, this.formLogin.value.apellidoMaterno,
+      this.formLogin.value.sexo, this.formLogin.value.fechaNacimiento, this.formLogin.value.direccion, this.formLogin.value.email);
 
       this.clienteService.registrarCliente(cliente).subscribe(
         response => {
-          this.toastr.success(response, 'Ok !', {
+          this.toastrService.success(response, 'Ok !',{
             timeOut: 3000,
             positionClass: 'toast-top-center'
           });
           this.router.navigate(['/']);
         },
         err => {
-          this.toastr.success(`Error, ${err}`, 'Ok !', {
+
+          this.toastr.error(`Error, ${err}`, 'Ok !', {
             timeOut: 3000,
             positionClass: 'toast-top-center'
           });
@@ -63,13 +101,26 @@ export class BodyComponent implements OnInit{
         }
         
       );
-
-      
-
   }
 
   updateCliente(): void{
-
+    const id = this.activatedRoute.snapshot.params['id'];
+    
+    this.clienteService.updateCliente(id, this.formLogin.value).subscribe(
+      response => {
+        this.toastrService.success(response, 'Ok !',{
+          timeOut: 3000,
+          positionClass: 'toast-top-center'
+        });
+        this.router.navigate(['/']);
+      },
+      err => {
+        this.toastrService.error(err, 'Fail !',{
+          timeOut: 3000,
+          positionClass: 'toast-top-center'
+        });
+      }
+    );
   }
 
   deleteCliente(): void{

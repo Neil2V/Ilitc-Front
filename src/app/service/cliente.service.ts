@@ -10,6 +10,7 @@ export class ClienteService {
 
   clienteUrl = "http://localhost:8080/ilitc/cliente";
 
+
   constructor(
     private httpCliente: HttpClient
   ) { }
@@ -22,7 +23,11 @@ export class ClienteService {
     return this.httpCliente.post(this.clienteUrl+"/create", cliente, {responseType: 'text'});
   } 
 
-  public deleteOrder(id: number): Observable<any>{
+  public updateCliente(id: number, cliente: Cliente): Observable<any>{
+    return this.httpCliente.put(this.clienteUrl+`/update/${id}`, cliente, {responseType: 'text'});
+  }
+
+  public deleteCliente(id: number): Observable<any>{
     return this.httpCliente.delete(this.clienteUrl+`/delete/${id}`, {responseType: 'text'});
   }
 
