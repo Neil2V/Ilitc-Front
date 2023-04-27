@@ -124,6 +124,22 @@ export class BodyComponent implements OnInit {
   }
 
   deleteCliente(): void{
-
+    console.log(this.formLogin.value);
+    const id = this.activatedRoute.snapshot.params['id'];
+    this.clienteService.deleteCliente(id).subscribe(
+      response => {
+        this.toastrService.success(response, 'Ok !',{
+          timeOut: 3000,
+          positionClass: 'toast-top-center'
+        });
+        this.router.navigate(['/']);
+      },
+      err => {
+        this.toastrService.error(err, 'Fail !',{
+          timeOut: 3000,
+          positionClass: 'toast-top-center'
+        });
+      }
+    )
   }
 }
